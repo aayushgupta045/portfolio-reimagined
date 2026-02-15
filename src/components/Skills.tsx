@@ -31,7 +31,7 @@ const SkillCategory = ({
           transition={{ delay: index * 0.1 + i * 0.05, duration: 0.4 }}
           className="skill-card flex items-center gap-2"
         >
-          <span className="text-lg">{skill.icon}</span>
+          <img src={skill.icon} alt={skill.name} className="w-5 h-5" />
           <span className="text-sm font-medium text-foreground">{skill.name}</span>
         </motion.div>
       ))}
