@@ -1,47 +1,37 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { skills } from "@/data/portfolioData";
 
-const SkillCategory = ({ 
-  title, 
-  items, 
-  index,
-  isInView 
-}: { 
-  title: string; 
+gsap.registerPlugin(ScrollTrigger);
+
+const SkillCategory = ({
+  title,
+  items,
+  className,
+}: {
+  title: string;
   items: { name: string; icon: string }[];
-  index: number;
-  isInView: boolean;
+  className?: string;
 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    animate={isInView ? { opacity: 1, y: 0 } : {}}
-    transition={{ delay: index * 0.1, duration: 0.6 }}
-  >
+  <div className={className}>
     <h3 className="text-lg font-display font-semibold text-foreground mb-4 flex items-center gap-2">
       <span className="w-2 h-2 bg-primary rounded-full" />
       {title}
     </h3>
     <div className="flex flex-wrap gap-3">
-      {items.map((skill, i) => (
-        <motion.div
-          key={skill.name}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ delay: index * 0.1 + i * 0.05, duration: 0.4 }}
-          className="skill-card flex items-center gap-2"
-        >
+      {items.map((skill) => (
+        <div key={skill.name} className="skill-card flex items-center gap-2 skill-chip" style={{ opacity: 0 }}>
           <img src={skill.icon} alt={skill.name} className="w-5 h-5" />
           <span className="text-sm font-medium text-foreground">{skill.name}</span>
-        </motion.div>
+        </div>
       ))}
     </div>
-  </motion.div>
+  </div>
 );
 
 const Skills = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLElement>(null);
 
   const skillCategories = [
     { title: "Languages", items: skills.languages },
@@ -50,20 +40,36 @@ const Skills = () => {
     { title: "Developer Tools", items: skills.tools },
   ];
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".skills-header", { opacity: 0, y: 30 }, {
+        opacity: 1, y: 0, duration: 0.6,
+        scrollTrigger: { trigger: ref.current, start: "top 80%" },
+      });
+      gsap.fromTo(".skill-category", { opacity: 0, y: 30 }, {
+        opacity: 1, y: 0, duration: 0.6, stagger: 0.1,
+        scrollTrigger: { trigger: ref.current, start: "top 80%" },
+      });
+      gsap.fromTo(".skill-chip", { opacity: 0, scale: 0.8 }, {
+        opacity: 1, scale: 1, duration: 0.4, stagger: 0.05,
+        scrollTrigger: { trigger: ref.current, start: "top 80%" },
+      });
+      gsap.fromTo(".role-tag", { opacity: 0, scale: 0.8 }, {
+        opacity: 1, scale: 1, duration: 0.4, stagger: 0.1,
+        scrollTrigger: { trigger: ref.current, start: "top 60%" },
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="skills" ref={ref} className="py-24 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent" />
-      
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="skills-header text-center mb-16" style={{ opacity: 0 }}>
           <span className="section-heading">🤝 What I Bring to the Table</span>
           <h2 className="section-title mt-2">How I Can Contribute & My Key Skills</h2>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-12">
           {skillCategories.map((category, index) => (
@@ -71,33 +77,20 @@ const Skills = () => {
               key={category.title}
               title={category.title}
               items={category.items}
-              index={index}
-              isInView={isInView}
+              className="skill-category"
             />
           ))}
         </div>
 
-        {/* Role Tags */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="mt-16 flex flex-wrap justify-center gap-4"
-        >
+        <div className="mt-16 flex flex-wrap justify-center gap-4">
           {["React Developer", "Python Developer", "Backend Developer", "Interactive Developer", "Project Manager"].map(
-            (role, index) => (
-              <motion.span
-                key={role}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
-                className="px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 text-foreground font-medium"
-              >
+            (role) => (
+              <span key={role} className="role-tag px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 text-foreground font-medium" style={{ opacity: 0 }}>
                 {role}
-              </motion.span>
+              </span>
             )
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
