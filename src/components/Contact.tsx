@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Send, Mail, Github, Linkedin } from "lucide-react";
+import { Send, Mail, Github, Linkedin, Gitlab } from "lucide-react";
 
 const Contact = () => {
   const ref = useRef(null);
@@ -135,6 +135,14 @@ const Contact = () => {
               className="p-4 rounded-full bg-secondary hover:bg-primary/20 transition-colors"
             >
               <Linkedin size={24} />
+            </a>
+            <a
+              href="https://gitlab.com/AayushGupta69"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 rounded-full bg-secondary hover:bg-primary/20 transition-colors"
+            >
+              <Gitlab size={24} />
             </a>
           </motion.div>
         </div>
